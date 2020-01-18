@@ -16,6 +16,7 @@ abstract class Hand extends StatelessWidget {
     @required this.color,
     @required this.size,
     @required this.topPosition,
+    @required this.pointPosition,
   })  : assert(color != null),
         assert(size != null),
         assert(topPosition != null);
@@ -31,4 +32,5 @@ abstract class Hand extends StatelessWidget {
   ///
   /// This angle is measured from the 12 o'clock position.
   final double topPosition;
+  final double pointPosition;
 }

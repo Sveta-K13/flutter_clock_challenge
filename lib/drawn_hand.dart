@@ -22,14 +22,17 @@ class DrawnHand extends Hand {
     @required this.thickness,
     @required double size,
     @required double topPosition,
+    @required double pointPosition,
   })  : assert(color != null),
         assert(thickness != null),
         assert(size != null),
         assert(topPosition != null),
+        assert(pointPosition != null),
         super(
           color: color,
           size: size,
           topPosition: topPosition,
+          pointPosition: pointPosition,
         );
 
   /// How thick the hand should be drawn, in logical pixels.
@@ -44,6 +47,7 @@ class DrawnHand extends Hand {
             handSize: size,
             lineWidth: thickness,
             topPosition: topPosition,
+            pointPosition: pointPosition,
             color: color,
           ),
         ),
@@ -58,10 +62,12 @@ class _HandPainter extends CustomPainter {
     @required this.handSize,
     @required this.lineWidth,
     @required this.topPosition,
+    @required this.pointPosition,
     @required this.color,
   })  : assert(handSize != null),
         assert(lineWidth != null),
         assert(topPosition != null),
+        assert(pointPosition != null),
         assert(color != null),
         assert(handSize >= 0.0),
         assert(handSize <= 1.0);
@@ -69,6 +75,7 @@ class _HandPainter extends CustomPainter {
   double handSize;
   double lineWidth;
   double topPosition;
+  double pointPosition;
   Color color;
 
   @override
@@ -81,6 +88,14 @@ class _HandPainter extends CustomPainter {
       ..strokeCap = StrokeCap.square;
 
     canvas.drawLine(center, position, linePaint);
+    final pointPaint = Paint()
+      ..color = color
+      ..strokeWidth = 1
+      ..style = PaintingStyle.fill;
+
+    print(pointPosition);
+    final point = Offset(size.longestSide * pointPosition, topPosition);
+    canvas.drawCircle(point, 10, pointPaint);
   }
 
   @override
@@ -88,6 +103,7 @@ class _HandPainter extends CustomPainter {
     return oldDelegate.handSize != handSize ||
         oldDelegate.lineWidth != lineWidth ||
         oldDelegate.topPosition != topPosition ||
+        oldDelegate.pointPosition != pointPosition ||
         oldDelegate.color != color;
   }
 }

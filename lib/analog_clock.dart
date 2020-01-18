@@ -113,7 +113,7 @@ class _AnalogClockState extends State<AnalogClock> {
           );
 
     final time = DateFormat.Hms().format(DateTime.now());
-
+    // print(_now.second / 60);
     return Semantics.fromProperties(
       properties: SemanticsProperties(
         label: 'Analog clock with time $time',
@@ -128,18 +128,21 @@ class _AnalogClockState extends State<AnalogClock> {
               thickness: 4,
               size: 1,
               topPosition: 20,
+              pointPosition: (_now.hour % 12) / 12,
             ),
             DrawnHand(
               color: customTheme.accentColor,
               thickness: 4,
               size: 0.9,
               topPosition: 120,
+              pointPosition: _now.minute / 60,
             ),
             DrawnHand(
               color: customTheme.highlightColor,
               thickness: 4,
               size: 0.9,
               topPosition: 220,
+              pointPosition: _now.second / 60,
             ),
             // Example of a hand drawn with [Container].
             // ContainerHand(

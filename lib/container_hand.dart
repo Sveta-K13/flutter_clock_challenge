@@ -18,17 +18,17 @@ class ContainerHand extends Hand {
   const ContainerHand({
     @required Color color,
     @required double size,
-    @required double angleRadians,
+    @required double topPosition,
     this.child,
   })  : assert(size != null),
-        assert(angleRadians != null),
+        assert(topPosition != null),
         super(
           color: color,
           size: size,
-          angleRadians: angleRadians,
+          topPosition: topPosition,
         );
 
-  /// The child widget used as the clock hand and rotated by [angleRadians].
+  /// The child widget used as the clock hand and rotated by [topPosition].
   final Widget child;
 
   @override
@@ -36,7 +36,7 @@ class ContainerHand extends Hand {
     return Center(
       child: SizedBox.expand(
         child: Transform.rotate(
-          angle: angleRadians,
+          angle: topPosition,
           alignment: Alignment.center,
           child: Transform.scale(
             scale: size,

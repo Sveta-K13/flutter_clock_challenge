@@ -15,10 +15,10 @@ abstract class Hand extends StatelessWidget {
   const Hand({
     @required this.color,
     @required this.size,
-    @required this.angleRadians,
+    @required this.topPosition,
   })  : assert(color != null),
         assert(size != null),
-        assert(angleRadians != null);
+        assert(topPosition != null);
 
   /// Hand color.
   final Color color;
@@ -30,5 +30,5 @@ abstract class Hand extends StatelessWidget {
   /// The angle, in radians, at which the hand is drawn.
   ///
   /// This angle is measured from the 12 o'clock position.
-  final double angleRadians;
+  final double topPosition;
 }

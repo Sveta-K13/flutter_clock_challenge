@@ -113,18 +113,6 @@ class _AnalogClockState extends State<AnalogClock> {
           );
 
     final time = DateFormat.Hms().format(DateTime.now());
-    final weatherInfo = DefaultTextStyle(
-      style: TextStyle(color: customTheme.primaryColor),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(_temperature),
-          Text(_temperatureRange),
-          Text(_condition),
-          Text(_location),
-        ],
-      ),
-    );
 
     return Semantics.fromProperties(
       properties: SemanticsProperties(
@@ -135,44 +123,49 @@ class _AnalogClockState extends State<AnalogClock> {
         color: customTheme.backgroundColor,
         child: Stack(
           children: [
-            // Example of a hand drawn with [CustomPainter].
+            DrawnHand(
+              color: customTheme.primaryColor,
+              thickness: 4,
+              size: 1,
+              topPosition: 20,
+            ),
             DrawnHand(
               color: customTheme.accentColor,
               thickness: 4,
-              size: 1,
-              angleRadians: _now.second * radiansPerTick,
+              size: 0.9,
+              topPosition: 120,
             ),
             DrawnHand(
               color: customTheme.highlightColor,
-              thickness: 16,
+              thickness: 4,
               size: 0.9,
-              angleRadians: _now.minute * radiansPerTick,
+              topPosition: 220,
             ),
             // Example of a hand drawn with [Container].
-            ContainerHand(
-              color: Colors.transparent,
-              size: 0.5,
-              angleRadians: _now.hour * radiansPerHour +
-                  (_now.minute / 60) * radiansPerHour,
-              child: Transform.translate(
-                offset: Offset(0.0, -60.0),
-                child: Container(
-                  width: 32,
-                  height: 150,
-                  decoration: BoxDecoration(
-                    color: customTheme.primaryColor,
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              left: 0,
-              bottom: 0,
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: weatherInfo,
-              ),
-            ),
+            // ContainerHand(
+            //   color: Colors.transparent,
+            //   size: 0.5,
+            //   topPosition: _now.hour * radiansPerHour +
+            //       (_now.minute / 60) * radiansPerHour,
+            //   child: Transform.translate(
+            //     offset: Offset(0.0, -60.0),
+            //     child: Container(
+            //       width: 32,
+            //       height: 150,
+            //       decoration: BoxDecoration(
+            //         color: customTheme.primaryColor,
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            // Positioned(
+            //   left: 0,
+            //   bottom: 0,
+            //   child: Padding(
+            //     padding: const EdgeInsets.all(8),
+            //     child: weatherInfo,
+            //   ),
+            // ),
           ],
         ),
       ),

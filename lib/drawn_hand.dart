@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:math' as math;
+// import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
@@ -21,15 +21,15 @@ class DrawnHand extends Hand {
     @required Color color,
     @required this.thickness,
     @required double size,
-    @required double angleRadians,
+    @required double topPosition,
   })  : assert(color != null),
         assert(thickness != null),
         assert(size != null),
-        assert(angleRadians != null),
+        assert(topPosition != null),
         super(
           color: color,
           size: size,
-          angleRadians: angleRadians,
+          topPosition: topPosition,
         );
 
   /// How thick the hand should be drawn, in logical pixels.
@@ -43,7 +43,7 @@ class DrawnHand extends Hand {
           painter: _HandPainter(
             handSize: size,
             lineWidth: thickness,
-            angleRadians: angleRadians,
+            topPosition: topPosition,
             color: color,
           ),
         ),
@@ -57,27 +57,24 @@ class _HandPainter extends CustomPainter {
   _HandPainter({
     @required this.handSize,
     @required this.lineWidth,
-    @required this.angleRadians,
+    @required this.topPosition,
     @required this.color,
   })  : assert(handSize != null),
         assert(lineWidth != null),
-        assert(angleRadians != null),
+        assert(topPosition != null),
         assert(color != null),
         assert(handSize >= 0.0),
         assert(handSize <= 1.0);
 
   double handSize;
   double lineWidth;
-  double angleRadians;
+  double topPosition;
   Color color;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final center = (Offset.zero & size).center;
-    // We want to start at the top, not at the x-axis, so add pi/2.
-    final angle = angleRadians - math.pi / 2.0;
-    final length = size.shortestSide * 0.5 * handSize;
-    final position = center + Offset(math.cos(angle), math.sin(angle)) * length;
+    final center = Offset(0, topPosition); //(Offset.zero & size).center;
+    final position = Offset(size.longestSide, topPosition);
     final linePaint = Paint()
       ..color = color
       ..strokeWidth = lineWidth
@@ -90,7 +87,7 @@ class _HandPainter extends CustomPainter {
   bool shouldRepaint(_HandPainter oldDelegate) {
     return oldDelegate.handSize != handSize ||
         oldDelegate.lineWidth != lineWidth ||
-        oldDelegate.angleRadians != angleRadians ||
+        oldDelegate.topPosition != topPosition ||
         oldDelegate.color != color;
   }
 }

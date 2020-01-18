@@ -19,6 +19,8 @@ class DrawnHand extends Hand {
   /// All of the parameters are required and must not be null.
   const DrawnHand({
     @required Color color,
+    @required Color colorFill,
+    @required Color colorFillLight,
     @required this.thickness,
     @required double size,
     @required double topPosition,
@@ -33,6 +35,8 @@ class DrawnHand extends Hand {
           size: size,
           topPosition: topPosition,
           pointPosition: pointPosition,
+          colorFill: colorFill,
+          colorFillLight: colorFillLight,
         );
 
   /// How thick the hand should be drawn, in logical pixels.
@@ -49,6 +53,8 @@ class DrawnHand extends Hand {
             topPosition: topPosition,
             pointPosition: pointPosition,
             color: color,
+            colorFill: colorFill,
+            colorFillLight: colorFillLight,
           ),
         ),
       ),
@@ -64,6 +70,8 @@ class _HandPainter extends CustomPainter {
     @required this.topPosition,
     @required this.pointPosition,
     @required this.color,
+    @required this.colorFill,
+    @required this.colorFillLight,
   })  : assert(handSize != null),
         assert(lineWidth != null),
         assert(topPosition != null),
@@ -77,25 +85,35 @@ class _HandPainter extends CustomPainter {
   double topPosition;
   double pointPosition;
   Color color;
+  Color colorFill;
+  Color colorFillLight;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final center = Offset(0, topPosition); //(Offset.zero & size).center;
-    final position = Offset(size.longestSide, topPosition);
+    final center = Offset(0, size.shortestSide * topPosition);
+    final position = Offset(size.longestSide, size.shortestSide * topPosition);
     final linePaint = Paint()
       ..color = color
       ..strokeWidth = lineWidth
-      ..strokeCap = StrokeCap.square;
+      ..strokeCap = StrokeCap.round;
 
     canvas.drawLine(center, position, linePaint);
+
+    final positionFill = Offset(size.longestSide * pointPosition, size.shortestSide * topPosition);
+    final linePaintFill = Paint()
+      ..color = colorFill
+      ..strokeWidth = lineWidth
+      ..strokeCap = StrokeCap.round;
+
+    canvas.drawLine(center, positionFill, linePaintFill);
+
     final pointPaint = Paint()
       ..color = color
       ..strokeWidth = 1
       ..style = PaintingStyle.fill;
 
-    print(pointPosition);
-    final point = Offset(size.longestSide * pointPosition, topPosition);
-    canvas.drawCircle(point, 10, pointPaint);
+    final point = Offset(size.longestSide * pointPosition, size.shortestSide * topPosition);
+    canvas.drawCircle(point, 30, pointPaint);
   }
 
   @override

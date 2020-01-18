@@ -103,7 +103,7 @@ class _AnalogClockState extends State<AnalogClock> {
             highlightColor: Color(0xFF8AB4F8),
             // Second hand.
             accentColor: Color(0xFF669DF6),
-            backgroundColor: Color(0xFFD2E3FC),
+            backgroundColor: Color(0xFFFFFFFF),
           )
         : Theme.of(context).copyWith(
             primaryColor: Color(0xFFD2E3FC),
@@ -124,51 +124,32 @@ class _AnalogClockState extends State<AnalogClock> {
         child: Stack(
           children: [
             DrawnHand(
-              color: customTheme.primaryColor,
-              thickness: 4,
+              color: Color(0xFFF3F0FA),
+              colorFill: Color(0xFFB393FF),
+              colorFillLight: Color(0xFFF3F0FA),
+              thickness: 20,
               size: 1,
-              topPosition: 20,
+              topPosition: 0.3,
               pointPosition: (_now.hour % 12) / 12,
             ),
             DrawnHand(
-              color: customTheme.accentColor,
-              thickness: 4,
+              color: Color(0xFFFAF0F0),
+              colorFill: Color(0xFFFFA4A4),
+              colorFillLight: Color(0xFFF3F0FA),
+              thickness: 20,
               size: 0.9,
-              topPosition: 120,
+              topPosition: 0.5,
               pointPosition: _now.minute / 60,
             ),
             DrawnHand(
-              color: customTheme.highlightColor,
-              thickness: 4,
+              color: Color(0xFFEBFAFF),
+              colorFill: Color(0xFF41D2FF),
+              colorFillLight: Color(0xFFF3F0FA),
+              thickness: 20,
               size: 0.9,
-              topPosition: 220,
+              topPosition: 0.7,
               pointPosition: _now.second / 60,
             ),
-            // Example of a hand drawn with [Container].
-            // ContainerHand(
-            //   color: Colors.transparent,
-            //   size: 0.5,
-            //   topPosition: _now.hour * radiansPerHour +
-            //       (_now.minute / 60) * radiansPerHour,
-            //   child: Transform.translate(
-            //     offset: Offset(0.0, -60.0),
-            //     child: Container(
-            //       width: 32,
-            //       height: 150,
-            //       decoration: BoxDecoration(
-            //         color: customTheme.primaryColor,
-            //       ),
-            //     ),
-            //   ),
-            // ),
-            // Positioned(
-            //   left: 0,
-            //   bottom: 0,
-            //   child: Padding(
-            //     padding: const EdgeInsets.all(8),
-            //     child: weatherInfo,
-            //   ),
-            // ),
           ],
         ),
       ),

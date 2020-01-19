@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
-
 import 'hand.dart';
 
 /// A clock hand that is drawn with [CustomPainter]
@@ -101,15 +98,19 @@ class _HandPainter extends CustomPainter {
 
     final positionFill = Offset(size.longestSide * pointPosition, size.shortestSide * topPosition);
     final linePaintFill = Paint()
-      ..color = colorFill
+      ..shader = LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: <Color>[colorFill, colorFillLight],
+                  stops: <double>[0.5, 1],
+                ).createShader(Rect.fromPoints(Offset.zero, positionFill))
       ..strokeWidth = lineWidth
       ..strokeCap = StrokeCap.round;
 
     canvas.drawLine(center, positionFill, linePaintFill);
 
     final pointPaint = Paint()
-      ..color = color
-      ..strokeWidth = 1
+      ..color = colorFill
       ..style = PaintingStyle.fill;
 
     final point = Offset(size.longestSide * pointPosition, size.shortestSide * topPosition);

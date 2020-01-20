@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:intl/intl.dart';
 import 'dart:typed_data';
+import 'dart:math';
 
 import 'drawn_hand.dart';
 
@@ -43,6 +44,9 @@ class _AnalogClockState extends State<AnalogClock> {
   ui.Image imageMe;
   ui.Image imageCoffee;
   ui.Image imageFlutter;
+  ui.Image imageMeTrace;
+  ui.Image imageCoffeeTrace;
+  ui.Image imageFlutterTrace;
   int imageLoaded = 0;
 
 
@@ -65,9 +69,15 @@ class _AnalogClockState extends State<AnalogClock> {
     final ByteData dataMe = await rootBundle.load('images/me@2x.png');
     final ByteData dataCoffee = await rootBundle.load('images/coffee@2x.png');
     final ByteData dataFlutter = await rootBundle.load('images/flutter@2x.png');
+    final ByteData dataMeTrace = await rootBundle.load('images/cry.png');
+    final ByteData dataCoffeeTrace = await rootBundle.load('images/cookie.png');
+    final ByteData dataFlutterTrace = await rootBundle.load('images/fire.png');
     imageMe = await loadImage(new Uint8List.view(dataMe.buffer));
     imageCoffee = await loadImage(new Uint8List.view(dataCoffee.buffer));
     imageFlutter = await loadImage(new Uint8List.view(dataFlutter.buffer));
+    imageMeTrace = await loadImage(new Uint8List.view(dataMeTrace.buffer));
+    imageCoffeeTrace = await loadImage(new Uint8List.view(dataCoffeeTrace.buffer));
+    imageFlutterTrace = await loadImage(new Uint8List.view(dataFlutterTrace.buffer));
   }
 
   Future<ui.Image> loadImage(List<int> img) async {
@@ -139,13 +149,14 @@ class _AnalogClockState extends State<AnalogClock> {
                 ),
               ),
             ),
+            padding: EdgeInsets.symmetric(horizontal: 0, vertical: 15),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
-                Text(hour),
-                Text(minute),
+                Text(hour, style: TextStyle(color: Color(0xFFBBBBBB))),
+                Text(minute, style: TextStyle(color: Color(0xFFBBBBBB))),
               ],
             ),
           ),
@@ -156,7 +167,8 @@ class _AnalogClockState extends State<AnalogClock> {
   }
 
   Widget _buildClock() {
-    if (this.imageLoaded == 3) {
+    if (this.imageLoaded == 6) {
+      Random rand = Random(_now.microsecond + _now.millisecond);
       return Stack(
         children: [
           Row(
@@ -173,6 +185,8 @@ class _AnalogClockState extends State<AnalogClock> {
             topPosition: 0.2,
             pointPosition: (_now.hour % 12) / 12,
             image: imageMe,
+            imageTrace: imageMeTrace,
+            isHit: rand.nextBool() && rand.nextBool() && rand.nextBool(),
           ),
           DrawnHand(
             color: Color(0xFFFAF0F0),
@@ -182,6 +196,8 @@ class _AnalogClockState extends State<AnalogClock> {
             topPosition: 0.5,
             pointPosition: _now.minute / 60,
             image: imageCoffee,
+            imageTrace: imageCoffeeTrace,
+            isHit: rand.nextBool(),
           ),
           DrawnHand(
             color: Color(0xFFEBFAFF),
@@ -191,6 +207,8 @@ class _AnalogClockState extends State<AnalogClock> {
             topPosition: 0.8,
             pointPosition: _now.second / 60,
             image: imageFlutter,
+            imageTrace: imageFlutterTrace,
+            isHit: rand.nextBool() && rand.nextBool(),
           ),
         ],
       );
@@ -210,18 +228,9 @@ class _AnalogClockState extends State<AnalogClock> {
     //    [DigitalClock].
     final customTheme = Theme.of(context).brightness == Brightness.light
         ? Theme.of(context).copyWith(
-            // Hour hand.
-            primaryColor: Color(0xFF4285F4),
-            // Minute hand.
-            highlightColor: Color(0xFF8AB4F8),
-            // Second hand.
-            accentColor: Color(0xFF669DF6),
             backgroundColor: Color(0xFFFFFFFF),
           )
         : Theme.of(context).copyWith(
-            primaryColor: Color(0xFFD2E3FC),
-            highlightColor: Color(0xFF4285F4),
-            accentColor: Color(0xFF8AB4F8),
             backgroundColor: Color(0xFF3C4043),
           );
 

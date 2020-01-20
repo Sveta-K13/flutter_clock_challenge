@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:math';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'hand.dart';
@@ -23,6 +24,8 @@ class DrawnHand extends Hand {
     @required double topPosition,
     @required double pointPosition,
     this.image,
+    this.imageTrace,
+    this.isHit,
   })  : assert(color != null),
         assert(thickness != null),
         assert(topPosition != null),
@@ -38,6 +41,8 @@ class DrawnHand extends Hand {
   /// How thick the hand should be drawn, in logical pixels.
   final double thickness;
   final ui.Image image;
+  final ui.Image imageTrace;
+  final bool isHit;
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +57,8 @@ class DrawnHand extends Hand {
             colorFill: colorFill,
             colorFillLight: colorFillLight,
             image: image,
+            imageTrace: imageTrace,
+            isHit: isHit,
           ),
         ),
       ),
@@ -69,6 +76,8 @@ class _HandPainter extends CustomPainter {
     @required this.colorFill,
     @required this.colorFillLight,
     this.image,
+    this.imageTrace,
+    this.isHit,
   })  : assert(lineWidth != null),
         assert(topPosition != null),
         assert(pointPosition != null),
@@ -81,6 +90,8 @@ class _HandPainter extends CustomPainter {
   Color colorFill;
   Color colorFillLight;
   ui.Image image;
+  ui.Image imageTrace;
+  bool isHit;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -104,7 +115,9 @@ class _HandPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
     canvas.drawLine(center, positionFill, linePaintFill);
 
-    final pointCenter = Offset(size.longestSide * pointPosition, size.shortestSide * topPosition);
+    double pointCenterX = size.longestSide * pointPosition;
+    double pointCenterY = size.shortestSide * topPosition;
+    final pointCenter = Offset(pointCenterX, pointCenterY);
     final double imageSize = lineWidth * 3.6;
     paintImage(
       canvas: canvas,
@@ -115,6 +128,39 @@ class _HandPainter extends CustomPainter {
         height: imageSize,
       ),
     );
+    Random rand = Random(DateTime.now().millisecond + (pointPosition * 100).floor());
+    if (isHit) {
+      for (var i = 0; i < 13; i++) {
+        // Select random Polar coordinate
+        // where theta is a random angle between 0..2*PI
+        // and r is a random value between 0..radius
+        double theta = rand.nextDouble() * pi * 2;
+        double r = rand.nextDouble() * 100;
+
+        // Transform the polar coordinate to cartesian (x,y)
+        // and translate the center to the current mouse position
+        double xPosition = pointCenterX + cos(theta) * r;
+        double yPosition = pointCenterY + sin(theta) * r;
+
+        if (xPosition > 0
+          && xPosition < pointCenterX - 36
+          && yPosition > pointCenterY - 36
+          && yPosition < pointCenterY + 36
+        ) {
+          final pointCenter = Offset(xPosition, yPosition);
+          final double imageSize = lineWidth * 2 * rand.nextDouble();
+          paintImage(
+            canvas: canvas,
+            image: imageTrace,
+            rect: Rect.fromCenter(
+              center: pointCenter,
+              width: imageSize,
+              height: imageSize,
+            ),
+          );
+        }
+      }
+    }
   }
 
   @override
@@ -123,6 +169,7 @@ class _HandPainter extends CustomPainter {
         oldDelegate.topPosition != topPosition ||
         oldDelegate.pointPosition != pointPosition ||
         oldDelegate.image != image ||
+        oldDelegate.isHit != isHit ||
         oldDelegate.color != color;
   }
 }

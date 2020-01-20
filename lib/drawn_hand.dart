@@ -36,7 +36,6 @@ class DrawnHand extends Hand {
           pointPosition: pointPosition,
           colorFill: colorFill,
           colorFillLight: colorFillLight,
-          // image: image,
         );
 
   /// How thick the hand should be drawn, in logical pixels.
@@ -45,13 +44,10 @@ class DrawnHand extends Hand {
 
   @override
   Widget build(BuildContext context) {
-    // print(image);
-
     return Center(
       child: SizedBox.expand(
         child: CustomPaint(
           painter: _HandPainter(
-            handSize: size,
             lineWidth: thickness,
             topPosition: topPosition,
             pointPosition: pointPosition,
@@ -69,7 +65,6 @@ class DrawnHand extends Hand {
 /// [CustomPainter] that draws a clock hand.
 class _HandPainter extends CustomPainter {
   _HandPainter({
-    @required this.handSize,
     @required this.lineWidth,
     @required this.topPosition,
     @required this.pointPosition,
@@ -77,15 +72,11 @@ class _HandPainter extends CustomPainter {
     @required this.colorFill,
     @required this.colorFillLight,
     this.image,
-  })  : assert(handSize != null),
-        assert(lineWidth != null),
+  })  : assert(lineWidth != null),
         assert(topPosition != null),
         assert(pointPosition != null),
-        assert(color != null),
-        assert(handSize >= 0.0),
-        assert(handSize <= 1.0);
+        assert(color != null);
 
-  double handSize;
   double lineWidth;
   double topPosition;
   double pointPosition;
@@ -130,8 +121,7 @@ class _HandPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_HandPainter oldDelegate) {
-    return oldDelegate.handSize != handSize ||
-        oldDelegate.lineWidth != lineWidth ||
+    return oldDelegate.lineWidth != lineWidth ||
         oldDelegate.topPosition != topPosition ||
         oldDelegate.pointPosition != pointPosition ||
         oldDelegate.image != image ||

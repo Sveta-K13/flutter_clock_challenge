@@ -93,7 +93,6 @@ class _HandPainter extends CustomPainter {
       ..color = color
       ..strokeWidth = lineWidth
       ..strokeCap = StrokeCap.round;
-
     canvas.drawLine(center, position, linePaint);
 
     final positionFill = Offset(size.longestSide * pointPosition, size.shortestSide * topPosition);
@@ -106,17 +105,19 @@ class _HandPainter extends CustomPainter {
                 ).createShader(Rect.fromPoints(Offset.zero, positionFill))
       ..strokeWidth = lineWidth
       ..strokeCap = StrokeCap.round;
-
     canvas.drawLine(center, positionFill, linePaintFill);
 
-    final pointPaint = Paint()
-      ..color = colorFill
-      ..style = PaintingStyle.fill;
-
-    final point = Offset(size.longestSide * pointPosition, size.shortestSide * topPosition);
-    canvas.drawCircle(point, 30, pointPaint);
-    final pointTopLeft = Offset(size.longestSide * pointPosition - 36, size.shortestSide * topPosition - 36);
-    canvas.drawImage(image, pointTopLeft, Paint());
+    final pointCenter = Offset(size.longestSide * pointPosition, size.shortestSide * topPosition);
+    final double imageSize = lineWidth * 3.6;
+    paintImage(
+      canvas: canvas,
+      image: image,
+      rect: Rect.fromCenter(
+        center: pointCenter,
+        width: imageSize,
+        height: imageSize,
+      ),
+    );
   }
 
   @override

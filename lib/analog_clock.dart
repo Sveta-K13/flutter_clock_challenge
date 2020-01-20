@@ -61,9 +61,9 @@ class _AnalogClockState extends State<AnalogClock> {
   }
 
   Future <Null> init() async {
-    final ByteData dataMe = await rootBundle.load('images/me.png');
-    final ByteData dataCoffee = await rootBundle.load('images/coffee.png');
-    final ByteData dataFlutter = await rootBundle.load('images/flutter.png');
+    final ByteData dataMe = await rootBundle.load('images/me@2x.png');
+    final ByteData dataCoffee = await rootBundle.load('images/coffee@2x.png');
+    final ByteData dataFlutter = await rootBundle.load('images/flutter@2x.png');
     imageMe = await loadImage(new Uint8List.view(dataMe.buffer));
     imageCoffee = await loadImage(new Uint8List.view(dataCoffee.buffer));
     imageFlutter = await loadImage(new Uint8List.view(dataFlutter.buffer));
@@ -159,7 +159,7 @@ class _AnalogClockState extends State<AnalogClock> {
             colorFillLight: Color(0xFFF3F0FA),
             thickness: 20,
             size: 1,
-            topPosition: 0.3,
+            topPosition: 0.2,
             pointPosition: (_now.hour % 12) / 12,
             image: imageMe,
           ),
@@ -179,7 +179,7 @@ class _AnalogClockState extends State<AnalogClock> {
             colorFillLight: Color(0xFFF3F0FA),
             thickness: 20,
             size: 0.9,
-            topPosition: 0.7,
+            topPosition: 0.8,
             pointPosition: _now.second / 60,
             image: imageFlutter,
           ),

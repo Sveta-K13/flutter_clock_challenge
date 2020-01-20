@@ -124,7 +124,8 @@ class _HandPainter extends CustomPainter {
 
     final point = Offset(size.longestSide * pointPosition, size.shortestSide * topPosition);
     canvas.drawCircle(point, 30, pointPaint);
-    canvas.drawImage(image, point, Paint());
+    final pointTopLeft = Offset(size.longestSide * pointPosition - 36, size.shortestSide * topPosition - 36);
+    canvas.drawImage(image, pointTopLeft, Paint());
   }
 
   @override

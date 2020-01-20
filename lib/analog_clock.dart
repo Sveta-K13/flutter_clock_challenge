@@ -39,10 +39,10 @@ class _AnalogClockState extends State<AnalogClock> {
   var _condition = '';
   var _location = '';
   Timer _timer;
-  ui.Image image;
-  // ui.Image imageCoffee;
-  // ui.Image imageFlutter;
-  bool isImageloaded = false;
+  ui.Image imageMe;
+  ui.Image imageCoffee;
+  ui.Image imageFlutter;
+  int imageLoaded = 0;
 
 
   @override
@@ -61,15 +61,19 @@ class _AnalogClockState extends State<AnalogClock> {
   }
 
   Future <Null> init() async {
-    final ByteData data = await rootBundle.load('images/me@2x.png');
-    image = await loadImage(new Uint8List.view(data.buffer));
+    final ByteData dataMe = await rootBundle.load('images/me.png');
+    final ByteData dataCoffee = await rootBundle.load('images/coffee.png');
+    final ByteData dataFlutter = await rootBundle.load('images/flutter.png');
+    imageMe = await loadImage(new Uint8List.view(dataMe.buffer));
+    imageCoffee = await loadImage(new Uint8List.view(dataCoffee.buffer));
+    imageFlutter = await loadImage(new Uint8List.view(dataFlutter.buffer));
   }
 
   Future<ui.Image> loadImage(List<int> img) async {
     final Completer<ui.Image> completer = new Completer();
     ui.decodeImageFromList(img, (ui.Image img) {
       setState(() {
-        isImageloaded = true;
+        imageLoaded += 1;
       });
       return completer.complete(img);
     });
@@ -114,7 +118,7 @@ class _AnalogClockState extends State<AnalogClock> {
   }
 
   Widget _buildClock() {
-    if (this.isImageloaded) {
+    if (this.imageLoaded == 3) {
       return Stack(
         children: [
           Row(
@@ -157,7 +161,7 @@ class _AnalogClockState extends State<AnalogClock> {
             size: 1,
             topPosition: 0.3,
             pointPosition: (_now.hour % 12) / 12,
-            image: image,
+            image: imageMe,
           ),
           DrawnHand(
             color: Color(0xFFFAF0F0),
@@ -167,7 +171,7 @@ class _AnalogClockState extends State<AnalogClock> {
             size: 0.9,
             topPosition: 0.5,
             pointPosition: _now.minute / 60,
-            image: image,
+            image: imageCoffee,
           ),
           DrawnHand(
             color: Color(0xFFEBFAFF),
@@ -177,7 +181,7 @@ class _AnalogClockState extends State<AnalogClock> {
             size: 0.9,
             topPosition: 0.7,
             pointPosition: _now.second / 60,
-            image: image,
+            image: imageFlutter,
           ),
         ],
       );

@@ -38,6 +38,7 @@ class _AnalogClockState extends State<AnalogClock> {
   var _temperatureRange = '';
   var _condition = '';
   var _location = '';
+  var _is24HourFormat = false;
   Timer _timer;
   ui.Image imageMe;
   ui.Image imageCoffee;
@@ -102,6 +103,7 @@ class _AnalogClockState extends State<AnalogClock> {
       _temperatureRange = '(${widget.model.low} - ${widget.model.highString})';
       _condition = widget.model.weatherString;
       _location = widget.model.location;
+      _is24HourFormat = widget.model.is24HourFormat;
     });
   }
 
@@ -117,6 +119,42 @@ class _AnalogClockState extends State<AnalogClock> {
     });
   }
 
+  List<Widget> _getTableColumns() {
+    final List<Widget> columns = [];
+    for (var i = 1; i < 13; i++) {
+      int hourIndex = (_now.hour > 12 && _is24HourFormat) ? 12 + i : i; 
+      String hour = (hourIndex < 10) ? '0$hourIndex' : hourIndex.toString();
+      int minuteIndex = i * 5;
+      String minute = minuteIndex < 10 ?'0$minuteIndex' : minuteIndex.toString();
+      columns.add(
+        Expanded(
+          flex: 1,
+          child: 
+          Container(
+            decoration: BoxDecoration(
+              border: Border(
+                right: BorderSide(
+                  color: Color(0xffF6F4F3),
+                  width: 1,
+                ),
+              ),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: <Widget>[
+                Text(hour),
+                Text(minute),
+              ],
+            ),
+          ),
+        )
+      );
+    }
+    return columns;
+  }
+
   Widget _buildClock() {
     if (this.imageLoaded == 3) {
       return Stack(
@@ -125,40 +163,13 @@ class _AnalogClockState extends State<AnalogClock> {
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                for (var i = 1; i < 13; i++)
-                Expanded(
-                  flex: 1,
-                  child: 
-                  Container(
-                    // color: Colors.yellow,
-                    decoration: BoxDecoration(
-                      border: Border(
-                        right: BorderSide(
-                          color: Color(0xffF6F4F3),
-                          width: 1,
-                        ),
-                      ),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: <Widget>[
-                        Text(i < 10 ? '0$i' : i.toString()),
-                        Text((i * 5) < 10 ?'0${i * 5}' : (i * 5).toString()),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+              children: _getTableColumns(),
           ),
           DrawnHand(
             color: Color(0xFFF3F0FA),
             colorFill: Color(0xFFB393FF),
             colorFillLight: Color(0xFFF3F0FA),
             thickness: 20,
-            size: 1,
             topPosition: 0.2,
             pointPosition: (_now.hour % 12) / 12,
             image: imageMe,
@@ -168,7 +179,6 @@ class _AnalogClockState extends State<AnalogClock> {
             colorFill: Color(0xFFFFA4A4),
             colorFillLight: Color(0xFFF3F0FA),
             thickness: 20,
-            size: 0.9,
             topPosition: 0.5,
             pointPosition: _now.minute / 60,
             image: imageCoffee,
@@ -178,7 +188,6 @@ class _AnalogClockState extends State<AnalogClock> {
             colorFill: Color(0xFF41D2FF),
             colorFillLight: Color(0xFFF3F0FA),
             thickness: 20,
-            size: 0.9,
             topPosition: 0.8,
             pointPosition: _now.second / 60,
             image: imageFlutter,

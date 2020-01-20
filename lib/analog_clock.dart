@@ -1,29 +1,15 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import 'dart:async';
 import 'dart:ui' as ui;
+import 'dart:typed_data';
+import 'dart:math';
 import 'package:flutter/services.dart';
 import 'package:flutter_clock_helper/model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:intl/intl.dart';
-import 'dart:typed_data';
-import 'dart:math';
 
 import 'drawn_hand.dart';
 
-/// Total distance traveled by a second or a minute hand, each second or minute,
-/// respectively.
-// final radiansPerTick = radians(360 / 60);
-
-/// Total distance traveled by an hour hand, each hour, in radians.
-// final radiansPerHour = radians(360 / 12);
-
-/// A basic analog clock.
-///
-/// You can do better than this!
 class AnalogClock extends StatefulWidget {
   const AnalogClock(this.model);
 
@@ -35,10 +21,6 @@ class AnalogClock extends StatefulWidget {
 
 class _AnalogClockState extends State<AnalogClock> {
   var _now = DateTime.now();
-  var _temperature = '';
-  var _temperatureRange = '';
-  var _condition = '';
-  var _location = '';
   var _is24HourFormat = false;
   Timer _timer;
   ui.Image imageMe;
@@ -55,20 +37,20 @@ class _AnalogClockState extends State<AnalogClock> {
     super.initState();
     widget.model.addListener(_updateModel);
     // Set the initial values.
-    init();
+    _initSources();
     _updateTime();
     _updateModel();
-    // hack for horizontal orientation
+    // Set always landscape orientation
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft
     ]);
   }
 
-  Future <Null> init() async {
-    final ByteData dataMe = await rootBundle.load('images/me@2x.png');
-    final ByteData dataCoffee = await rootBundle.load('images/coffee@2x.png');
-    final ByteData dataFlutter = await rootBundle.load('images/flutter@2x.png');
+  Future <Null> _initSources() async {
+    final ByteData dataMe = await rootBundle.load('images/me.png');
+    final ByteData dataCoffee = await rootBundle.load('images/coffee.png');
+    final ByteData dataFlutter = await rootBundle.load('images/flutter.png');
     final ByteData dataMeTrace = await rootBundle.load('images/cry.png');
     final ByteData dataCoffeeTrace = await rootBundle.load('images/cookie.png');
     final ByteData dataFlutterTrace = await rootBundle.load('images/fire.png');

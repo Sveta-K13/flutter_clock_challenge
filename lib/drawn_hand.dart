@@ -1,17 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import 'dart:math';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'hand.dart';
 
 /// A clock hand that is drawn with [CustomPainter]
-///
-/// The hand's length scales based on the clock's size.
-/// This hand is used to build the second and minute hands, and demonstrates
-/// building a custom hand.
 class DrawnHand extends Hand {
   /// Create a const clock [Hand].
   ///
@@ -23,13 +15,17 @@ class DrawnHand extends Hand {
     @required this.thickness,
     @required double topPosition,
     @required double pointPosition,
-    this.image,
-    this.imageTrace,
-    this.isHit,
+    @required this.image,
+    @required this.imageTrace,
+    @required this.isHit,
   })  : assert(color != null),
-        assert(thickness != null),
+        assert(colorFill != null),
+        assert(colorFillLight != null),
         assert(topPosition != null),
         assert(pointPosition != null),
+        assert(image != null),
+        assert(imageTrace != null),
+        assert(isHit != null),
         super(
           color: color,
           topPosition: topPosition,
@@ -103,14 +99,15 @@ class _HandPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
     canvas.drawLine(center, position, linePaint);
 
-    final positionFill = Offset(size.longestSide * pointPosition, size.shortestSide * topPosition);
+    final positionFill = Offset(
+        size.longestSide * pointPosition, size.shortestSide * topPosition);
     final linePaintFill = Paint()
       ..shader = LinearGradient(
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                  colors: <Color>[colorFill, colorFillLight],
-                  stops: <double>[0.5, 1],
-                ).createShader(Rect.fromPoints(Offset.zero, positionFill))
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+        colors: <Color>[colorFill, colorFillLight],
+        stops: <double>[0.5, 1],
+      ).createShader(Rect.fromPoints(Offset.zero, positionFill))
       ..strokeWidth = lineWidth
       ..strokeCap = StrokeCap.round;
     canvas.drawLine(center, positionFill, linePaintFill);
@@ -128,7 +125,8 @@ class _HandPainter extends CustomPainter {
         height: imageSize,
       ),
     );
-    Random rand = Random(DateTime.now().millisecond + (pointPosition * 100).floor());
+    Random rand =
+        Random(DateTime.now().millisecond + ((pointPosition + topPosition) * 100).floor());
     if (isHit) {
       for (var i = 0; i < 13; i++) {
         // Select random Polar coordinate
@@ -141,14 +139,13 @@ class _HandPainter extends CustomPainter {
         // and translate the center to the current mouse position
         double xPosition = pointCenterX + cos(theta) * r;
         double yPosition = pointCenterY + sin(theta) * r;
-
-        if (xPosition > 0
-          && xPosition < pointCenterX - 36
-          && yPosition > pointCenterY - 36
-          && yPosition < pointCenterY + 36
-        ) {
-          final pointCenter = Offset(xPosition, yPosition);
+        double halfImageSize = imageSize / 2;
+        if (xPosition > 0 &&
+            xPosition < pointCenterX - halfImageSize &&
+            yPosition > pointCenterY - halfImageSize &&
+            yPosition < pointCenterY + halfImageSize) {
           final double imageSize = lineWidth * 2 * rand.nextDouble();
+          final pointCenter = Offset(xPosition, yPosition);
           paintImage(
             canvas: canvas,
             image: imageTrace,

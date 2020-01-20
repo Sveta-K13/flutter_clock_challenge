@@ -1,13 +1,6 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import 'package:flutter/material.dart';
 
 /// A base class for an analog clock hand-drawing widget.
-///
-/// This only draws one hand of the analog clock. Put it in a [Stack] to have
-/// more than one hand.
 abstract class Hand extends StatelessWidget {
   /// Create a const clock [Hand].
   ///
@@ -19,17 +12,19 @@ abstract class Hand extends StatelessWidget {
     @required this.topPosition,
     @required this.pointPosition,
   })  : assert(color != null),
-        assert(pointPosition != null),
-        assert(topPosition != null);
+        assert(colorFill != null),
+        assert(colorFillLight != null),
+        assert(topPosition != null),
+        assert(pointPosition != null);
 
-  /// Hand color.
+  /// Hand colors
   final Color color;
   final Color colorFill;
   final Color colorFillLight;
 
-  /// The angle, in radians, at which the hand is drawn.
-  ///
-  /// This angle is measured from the 12 o'clock position.
+  /// Part of canvas for hand line
   final double topPosition;
+
+  /// Part of line for time point
   final double pointPosition;
 }

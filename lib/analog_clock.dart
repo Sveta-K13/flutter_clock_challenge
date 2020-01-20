@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-
+import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
 import 'package:flutter_clock_helper/model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:intl/intl.dart';
+import 'dart:typed_data';
+
 import 'drawn_hand.dart';
 
 /// Total distance traveled by a second or a minute hand, each second or minute,
@@ -37,12 +39,18 @@ class _AnalogClockState extends State<AnalogClock> {
   var _condition = '';
   var _location = '';
   Timer _timer;
+  ui.Image image;
+  // ui.Image imageCoffee;
+  // ui.Image imageFlutter;
+  bool isImageloaded = false;
+
 
   @override
   void initState() {
     super.initState();
     widget.model.addListener(_updateModel);
     // Set the initial values.
+    init();
     _updateTime();
     _updateModel();
     // hack for horizontal orientation
@@ -50,6 +58,22 @@ class _AnalogClockState extends State<AnalogClock> {
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft
     ]);
+  }
+
+  Future <Null> init() async {
+    final ByteData data = await rootBundle.load('images/me@2x.png');
+    image = await loadImage(new Uint8List.view(data.buffer));
+  }
+
+  Future<ui.Image> loadImage(List<int> img) async {
+    final Completer<ui.Image> completer = new Completer();
+    ui.decodeImageFromList(img, (ui.Image img) {
+      setState(() {
+        isImageloaded = true;
+      });
+      return completer.complete(img);
+    });
+    return completer.future;
   }
 
   @override
@@ -89,6 +113,79 @@ class _AnalogClockState extends State<AnalogClock> {
     });
   }
 
+  Widget _buildClock() {
+    if (this.isImageloaded) {
+      return Stack(
+        children: [
+          Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                for (var i = 1; i < 13; i++)
+                Expanded(
+                  flex: 1,
+                  child: 
+                  Container(
+                    // color: Colors.yellow,
+                    decoration: BoxDecoration(
+                      border: Border(
+                        right: BorderSide(
+                          color: Color(0xffF6F4F3),
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        Text(i < 10 ? '0$i' : i.toString()),
+                        Text((i * 5) < 10 ?'0${i * 5}' : (i * 5).toString()),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+          ),
+          DrawnHand(
+            color: Color(0xFFF3F0FA),
+            colorFill: Color(0xFFB393FF),
+            colorFillLight: Color(0xFFF3F0FA),
+            thickness: 20,
+            size: 1,
+            topPosition: 0.3,
+            pointPosition: (_now.hour % 12) / 12,
+            image: image,
+          ),
+          DrawnHand(
+            color: Color(0xFFFAF0F0),
+            colorFill: Color(0xFFFFA4A4),
+            colorFillLight: Color(0xFFF3F0FA),
+            thickness: 20,
+            size: 0.9,
+            topPosition: 0.5,
+            pointPosition: _now.minute / 60,
+            image: image,
+          ),
+          DrawnHand(
+            color: Color(0xFFEBFAFF),
+            colorFill: Color(0xFF41D2FF),
+            colorFillLight: Color(0xFFF3F0FA),
+            thickness: 20,
+            size: 0.9,
+            topPosition: 0.7,
+            pointPosition: _now.second / 60,
+            image: image,
+          ),
+        ],
+      );
+    } else {
+      return Center(child: new Text('loading...'));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // There are many ways to apply themes to your clock. Some are:
@@ -124,69 +221,7 @@ class _AnalogClockState extends State<AnalogClock> {
       ),
       child: Container(
         color: customTheme.backgroundColor,
-        child: Stack(
-          children: [
-            Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  for (var i = 1; i < 13; i++)
-                  Expanded(
-                    flex: 1,
-                    child: 
-                    Container(
-                      // color: Colors.yellow,
-                      decoration: BoxDecoration(
-                        border: Border(
-                          right: BorderSide(
-                            color: Color(0xffF6F4F3),
-                            width: 1,
-                          ),
-                        ),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        mainAxisSize: MainAxisSize.max,
-                        children: <Widget>[
-                          Text(i < 10 ? '0$i' : i.toString(), textAlign: TextAlign.center)
-                          ,
-                          Text((i * 5) < 10 ?'0${i * 5}' : (i * 5).toString()),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-            ),
-            DrawnHand(
-              color: Color(0xFFF3F0FA),
-              colorFill: Color(0xFFB393FF),
-              colorFillLight: Color(0xFFF3F0FA),
-              thickness: 20,
-              size: 1,
-              topPosition: 0.3,
-              pointPosition: (_now.hour % 12) / 12,
-            ),
-            DrawnHand(
-              color: Color(0xFFFAF0F0),
-              colorFill: Color(0xFFFFA4A4),
-              colorFillLight: Color(0xFFF3F0FA),
-              thickness: 20,
-              size: 0.9,
-              topPosition: 0.5,
-              pointPosition: _now.minute / 60,
-            ),
-            DrawnHand(
-              color: Color(0xFFEBFAFF),
-              colorFill: Color(0xFF41D2FF),
-              colorFillLight: Color(0xFFF3F0FA),
-              thickness: 20,
-              size: 0.9,
-              topPosition: 0.7,
-              pointPosition: _now.second / 60,
-            ),
-          ],
-        ),
+        child: _buildClock(),
       ),
     );
   }

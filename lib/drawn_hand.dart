@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'hand.dart';
 
@@ -22,6 +23,7 @@ class DrawnHand extends Hand {
     @required double size,
     @required double topPosition,
     @required double pointPosition,
+    this.image,
   })  : assert(color != null),
         assert(thickness != null),
         assert(size != null),
@@ -34,13 +36,17 @@ class DrawnHand extends Hand {
           pointPosition: pointPosition,
           colorFill: colorFill,
           colorFillLight: colorFillLight,
+          // image: image,
         );
 
   /// How thick the hand should be drawn, in logical pixels.
   final double thickness;
+  final ui.Image image;
 
   @override
   Widget build(BuildContext context) {
+    // print(image);
+
     return Center(
       child: SizedBox.expand(
         child: CustomPaint(
@@ -52,6 +58,7 @@ class DrawnHand extends Hand {
             color: color,
             colorFill: colorFill,
             colorFillLight: colorFillLight,
+            image: image,
           ),
         ),
       ),
@@ -69,6 +76,7 @@ class _HandPainter extends CustomPainter {
     @required this.color,
     @required this.colorFill,
     @required this.colorFillLight,
+    this.image,
   })  : assert(handSize != null),
         assert(lineWidth != null),
         assert(topPosition != null),
@@ -84,6 +92,7 @@ class _HandPainter extends CustomPainter {
   Color color;
   Color colorFill;
   Color colorFillLight;
+  ui.Image image;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -115,6 +124,7 @@ class _HandPainter extends CustomPainter {
 
     final point = Offset(size.longestSide * pointPosition, size.shortestSide * topPosition);
     canvas.drawCircle(point, 30, pointPaint);
+    canvas.drawImage(image, point, Paint());
   }
 
   @override
@@ -123,6 +133,7 @@ class _HandPainter extends CustomPainter {
         oldDelegate.lineWidth != lineWidth ||
         oldDelegate.topPosition != topPosition ||
         oldDelegate.pointPosition != pointPosition ||
+        oldDelegate.image != image ||
         oldDelegate.color != color;
   }
 }

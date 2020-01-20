@@ -177,12 +177,7 @@ class _ClockCustomizerState extends State<ClockCustomizer> {
       child: AspectRatio(
         aspectRatio: 5 / 3,
         child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(
-              width: 2,
-              color: Theme.of(context).unselectedWidgetColor,
-            ),
-          ),
+          padding: EdgeInsets.symmetric(horizontal: 30),
           child: widget._clock(_model),
         ),
       ),

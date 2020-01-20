@@ -30,7 +30,8 @@ class _AnalogClockState extends State<AnalogClock> {
   ui.Image imageCoffeeTrace;
   ui.Image imageFlutterTrace;
   int imageLoaded = 0;
-
+  int imageExpected = 6;
+  double lineThickness = 20;
 
   @override
   void initState() {
@@ -41,13 +42,11 @@ class _AnalogClockState extends State<AnalogClock> {
     _updateTime();
     _updateModel();
     // Set always landscape orientation
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeRight,
-      DeviceOrientation.landscapeLeft
-    ]);
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft]);
   }
 
-  Future <Null> _initSources() async {
+  Future<Null> _initSources() async {
     final ByteData dataMe = await rootBundle.load('images/me.png');
     final ByteData dataCoffee = await rootBundle.load('images/coffee.png');
     final ByteData dataFlutter = await rootBundle.load('images/flutter.png');
@@ -58,8 +57,10 @@ class _AnalogClockState extends State<AnalogClock> {
     imageCoffee = await loadImage(new Uint8List.view(dataCoffee.buffer));
     imageFlutter = await loadImage(new Uint8List.view(dataFlutter.buffer));
     imageMeTrace = await loadImage(new Uint8List.view(dataMeTrace.buffer));
-    imageCoffeeTrace = await loadImage(new Uint8List.view(dataCoffeeTrace.buffer));
-    imageFlutterTrace = await loadImage(new Uint8List.view(dataFlutterTrace.buffer));
+    imageCoffeeTrace =
+        await loadImage(new Uint8List.view(dataCoffeeTrace.buffer));
+    imageFlutterTrace =
+        await loadImage(new Uint8List.view(dataFlutterTrace.buffer));
   }
 
   Future<ui.Image> loadImage(List<int> img) async {
@@ -91,10 +92,6 @@ class _AnalogClockState extends State<AnalogClock> {
 
   void _updateModel() {
     setState(() {
-      _temperature = widget.model.temperatureString;
-      _temperatureRange = '(${widget.model.low} - ${widget.model.highString})';
-      _condition = widget.model.weatherString;
-      _location = widget.model.location;
       _is24HourFormat = widget.model.is24HourFormat;
     });
   }
@@ -114,56 +111,54 @@ class _AnalogClockState extends State<AnalogClock> {
   List<Widget> _getTableColumns() {
     final List<Widget> columns = [];
     for (var i = 1; i < 13; i++) {
-      int hourIndex = (_now.hour > 12 && _is24HourFormat) ? 12 + i : i; 
-      String hour = (hourIndex < 10) ? '0$hourIndex' : hourIndex.toString();
-      int minuteIndex = i * 5;
-      String minute = minuteIndex < 10 ?'0$minuteIndex' : minuteIndex.toString();
-      columns.add(
-        Expanded(
-          flex: 1,
-          child: 
-          Container(
-            decoration: BoxDecoration(
-              border: Border(
-                right: BorderSide(
-                  color: Color(0xffF6F4F3),
-                  width: 1,
-                ),
+      int hourTick = (_now.hour > 12 && _is24HourFormat) ? 12 + i : i;
+      String hourMark = (hourTick < 10) ? '0$hourTick' : hourTick.toString();
+      int minuteTick = i * 5;
+      String minuteMark =
+          minuteTick < 10 ? '0$minuteTick' : minuteTick.toString();
+      columns.add(Expanded(
+        flex: 1,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              right: BorderSide(
+                color: Color(0xFFF6F4F3),
+                width: 1,
               ),
             ),
-            padding: EdgeInsets.symmetric(horizontal: 0, vertical: 15),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: <Widget>[
-                Text(hour, style: TextStyle(color: Color(0xFFBBBBBB))),
-                Text(minute, style: TextStyle(color: Color(0xFFBBBBBB))),
-              ],
-            ),
           ),
-        )
-      );
+          padding: EdgeInsets.symmetric(horizontal: 0, vertical: 15),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+              Text(hourMark, style: TextStyle(color: Color(0xFFBBBBBB))),
+              Text(minuteMark, style: TextStyle(color: Color(0xFFBBBBBB))),
+            ],
+          ),
+        ),
+      ));
     }
     return columns;
   }
 
   Widget _buildClock() {
-    if (this.imageLoaded == 6) {
+    if (this.imageLoaded == this.imageExpected) {
       Random rand = Random(_now.microsecond + _now.millisecond);
       return Stack(
         children: [
           Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: _getTableColumns(),
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: _getTableColumns(),
           ),
           DrawnHand(
             color: Color(0xFFF3F0FA),
             colorFill: Color(0xFFB393FF),
             colorFillLight: Color(0xFFF3F0FA),
-            thickness: 20,
+            thickness: lineThickness,
             topPosition: 0.2,
             pointPosition: (_now.hour % 12) / 12,
             image: imageMe,
@@ -174,7 +169,7 @@ class _AnalogClockState extends State<AnalogClock> {
             color: Color(0xFFFAF0F0),
             colorFill: Color(0xFFFFA4A4),
             colorFillLight: Color(0xFFF3F0FA),
-            thickness: 20,
+            thickness: lineThickness,
             topPosition: 0.5,
             pointPosition: _now.minute / 60,
             image: imageCoffee,
@@ -185,7 +180,7 @@ class _AnalogClockState extends State<AnalogClock> {
             color: Color(0xFFEBFAFF),
             colorFill: Color(0xFF41D2FF),
             colorFillLight: Color(0xFFF3F0FA),
-            thickness: 20,
+            thickness: lineThickness,
             topPosition: 0.8,
             pointPosition: _now.second / 60,
             image: imageFlutter,
@@ -201,13 +196,6 @@ class _AnalogClockState extends State<AnalogClock> {
 
   @override
   Widget build(BuildContext context) {
-    // There are many ways to apply themes to your clock. Some are:
-    //  - Inherit the parent Theme (see ClockCustomizer in the
-    //    flutter_clock_helper package).
-    //  - Override the Theme.of(context).colorScheme.
-    //  - Create your own [ThemeData], demonstrated in [AnalogClock].
-    //  - Create a map of [Color]s to custom keys, demonstrated in
-    //    [DigitalClock].
     final customTheme = Theme.of(context).brightness == Brightness.light
         ? Theme.of(context).copyWith(
             backgroundColor: Color(0xFFFFFFFF),
